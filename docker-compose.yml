@@ -1,0 +1,37 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: barberia
+      MYSQL_USER: barberia
+      MYSQL_PASSWORD: barberia123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - barberia_db:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: barberia
+      DB_USER: barberia
+      DB_PASS: barberia123
+      APP_NAME: fioreee_barber
+      APP_TIMEZONE: America/Argentina/Cordoba
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  barberia_db:
