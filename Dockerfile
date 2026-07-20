@@ -11,3 +11,5 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 WORKDIR /var/www/html
 COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html
+
+RUN apache2ctl -M
